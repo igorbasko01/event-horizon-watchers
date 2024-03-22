@@ -29,3 +29,9 @@ class EventsGeneratorTests(unittest.TestCase):
         self.assertEqual(0, len(events))
         self.assertEqual([], events)
 
+    def test_random_events_generator_generates_empty_list_if_times_negative(self):
+        generator = RandomEventsGenerator({SignInStartedEvent, SecurityChallengePassedEvent}, 'uid', -1)
+        events = list(generator.generate())
+        self.assertEqual(0, len(events))
+        self.assertEqual([], events)
+

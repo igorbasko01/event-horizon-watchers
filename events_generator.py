@@ -1,11 +1,18 @@
 import random
+from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Set, Type, Generator
 
 from events import Event, UserId
 
 
-class RandomEventsGenerator:
+class EventsGenerator(ABC):
+    @abstractmethod
+    def generate(self) -> Generator[Event, None, None]:
+        pass
+
+
+class RandomEventsGenerator(EventsGenerator):
     def __init__(self, event_types: Set[Type[Event]], user_id: UserId, times: int):
         self.event_types = event_types
         self.user_id = user_id
