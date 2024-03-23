@@ -14,7 +14,7 @@ class EventTests(unittest.TestCase):
 
     def test_event_to_json(self):
         event = Event(1, 'user_id')
-        self.assertEqual('{"time": 1, "user_id": "user_id"}', event.to_json())
+        self.assertEqual('{"time": 1, "user_id": "user_id", "event_name": "Event"}', event.to_json())
 
     def test_sign_in_started_event_creation(self):
         event = SignInStartedEvent(1, 'user_id')
@@ -24,7 +24,7 @@ class EventTests(unittest.TestCase):
 
     def test_sign_in_started_event_to_json(self):
         event = SignInStartedEvent(1, 'user_id')
-        self.assertEqual('{"time": 1, "user_id": "user_id"}', event.to_json())
+        self.assertEqual('{"time": 1, "user_id": "user_id", "event_name": "SignInStartedEvent"}', event.to_json())
 
     def test_one_time_password_sent_event_creation(self):
         event = OneTimePasswordSentEvent(1, 'user_id', 'pwd', DeliveryMethod.EMAIL, 123, 'corr_id')
@@ -39,7 +39,7 @@ class EventTests(unittest.TestCase):
     def test_one_time_password_sent_event_to_json(self):
         event = OneTimePasswordSentEvent(1, 'u_id', 'pwd', DeliveryMethod.EMAIL, 123, 'corr_id')
         self.assertEqual(
-            '{"time": 1, "user_id": "u_id", "password": "pwd", "delivery_method": "email", "expires_at": 123, "correlation_id": "corr_id"}',
+            '{"time": 1, "user_id": "u_id", "password": "pwd", "delivery_method": "email", "expires_at": 123, "correlation_id": "corr_id", "event_name": "OneTimePasswordSentEvent"}',
             event.to_json())
 
     def test_one_time_password_sent_event_default(self):
@@ -120,3 +120,7 @@ class EventTests(unittest.TestCase):
         self.assertEqual(1, event.time)
         self.assertEqual('uid', event.user_id)
         self.assertIsNotNone(event.challenge_id)
+
+    def test_event_adds_event_name_to_json(self):
+        event = SignInStartedEvent(1, 'user_id')
+        self.assertEqual('{"time": 1, "user_id": "user_id", "event_name": "SignInStartedEvent"}', event.to_json())

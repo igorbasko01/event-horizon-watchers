@@ -57,7 +57,9 @@ class Event:
     user_id: UserId
 
     def to_json(self) -> str:
-        return json.dumps(asdict(self), cls=EnumEncoder)
+        data_dict = asdict(self)
+        data_dict['event_name'] = self.__class__.__name__
+        return json.dumps(data_dict, cls=EnumEncoder)
 
 
 @dataclass

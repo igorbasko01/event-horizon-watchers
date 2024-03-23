@@ -21,4 +21,5 @@ class RandomEventsGenerator(EventsGenerator):
     def generate(self) -> Generator[Event, None, None]:
         for _ in range(self.times):
             random_event_type = random.choice(list(self.event_types))
-            yield random_event_type(time=datetime.now().timestamp(), user_id=self.user_id)
+            yield random_event_type(time=int(datetime.now().timestamp() * 1000),  # milliseconds
+                                    user_id=self.user_id)
