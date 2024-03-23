@@ -1,6 +1,7 @@
 import unittest
 
-from events import SignInStartedEvent, OneTimePasswordSentEvent, SecurityChallengePassedEvent
+from events import SignInStartedEvent, OneTimePasswordSentEvent, SecurityChallengePassedEvent, \
+    SecurityChallengePresentedEvent, SecurityChallengeAnsweredEvent, SecurityChallengeFailedEvent
 from events_generator import RandomEventsGenerator, SequentialEventsGenerator
 
 
@@ -49,3 +50,19 @@ class EventsGeneratorTests(unittest.TestCase):
         events = list(generator.generate())
         self.assertEqual(0, len(events))
         self.assertEqual([], events)
+
+    def test_sequential_events_generator_also_accepts_random_events_generator(self):
+        uid = 'uid'
+        generator = SequentialEventsGenerator([
+            SignInStartedEvent,
+            SecurityChallengePresentedEvent,
+            SecurityChallengeAnsweredEvent,
+            RandomEventsGenerator({SecurityChallengePassedEvent, SecurityChallengeFailedEvent}, uid, 1)
+        ], uid)
+        events = list(generator.generate())
+        self.assertEqual(4, len(events))
+        self.assertIsInstance(events[0], SignInStartedEvent)
+        self.assertIsInstance(events[1], SecurityChallengePresentedEvent)
+        self.assertIsInstance(events[2], SecurityChallengeAnsweredEvent)
+        self.assertTrue(
+            isinstance(events[3], SecurityChallengePassedEvent) or isinstance(events[3], SecurityChallengeFailedEvent))

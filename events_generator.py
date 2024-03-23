@@ -1,7 +1,7 @@
 import random
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Set, Type, Generator, List
+from typing import Set, Type, Generator, List, Union
 
 from events import Event, UserId
 
@@ -26,11 +26,16 @@ class RandomEventsGenerator(EventsGenerator):
 
 
 class SequentialEventsGenerator(EventsGenerator):
-    def __init__(self, event_types: List[Type[Event]], user_id: UserId):
+    def __init__(self, event_types: List[Union[Type[Event], Type[EventsGenerator]]], user_id: UserId):
         self.event_types = event_types
         self.user_id = user_id
 
     def generate(self):
         for event_type in self.event_types:
-            yield event_type(time=int(datetime.now().timestamp() * 1000),  # milliseconds
-                             user_id=self.user_id)
+            if isinstance(event_type, EventsGenerator):
+                yield from event_type.generate()
+            elif issubclass(event_type, Event):
+                yield event_type(time=int(datetime.now().timestamp() * 1000),  # milliseconds
+                                 user_id=self.user_id)
+            else:
+                raise ValueError('Invalid event type')
