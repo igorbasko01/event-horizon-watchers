@@ -1,7 +1,7 @@
 import random
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Set, Type, Generator
+from typing import Set, Type, Generator, List
 
 from events import Event, UserId
 
@@ -23,3 +23,14 @@ class RandomEventsGenerator(EventsGenerator):
             random_event_type = random.choice(list(self.event_types))
             yield random_event_type(time=int(datetime.now().timestamp() * 1000),  # milliseconds
                                     user_id=self.user_id)
+
+
+class SequentialEventsGenerator(EventsGenerator):
+    def __init__(self, event_types: List[Type[Event]], user_id: UserId):
+        self.event_types = event_types
+        self.user_id = user_id
+
+    def generate(self):
+        for event_type in self.event_types:
+            yield event_type(time=int(datetime.now().timestamp() * 1000),  # milliseconds
+                             user_id=self.user_id)

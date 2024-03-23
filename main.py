@@ -1,4 +1,4 @@
-from typing import Type, List, Set
+from typing import Type, Set
 
 from events import SignInStartedEvent, OneTimePasswordSentEvent, SecurityChallengePassedEvent, Event
 from events_generator import RandomEventsGenerator
