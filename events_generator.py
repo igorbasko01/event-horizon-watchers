@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Set, Type, Generator, List, Union
 
 from events import Event, UserId
+from time_generator import TimeGenerator
 
 
 class EventsGenerator(ABC):
@@ -13,15 +14,16 @@ class EventsGenerator(ABC):
 
 
 class RandomEventsGenerator(EventsGenerator):
-    def __init__(self, event_types: Set[Type[Event]], user_id: UserId, times: int):
+    def __init__(self, event_types: Set[Type[Event]], user_id: UserId, times: int, time_generator=None):
         self.event_types = event_types
         self.user_id = user_id
         self.times = times
+        self.time_generator = time_generator or TimeGenerator(int(datetime.now().timestamp() * 1000))
 
     def generate(self) -> Generator[Event, None, None]:
         for _ in range(self.times):
             random_event_type = random.choice(list(self.event_types))
-            yield random_event_type(time=int(datetime.now().timestamp() * 1000),  # milliseconds
+            yield random_event_type(time=self.time_generator.next(),
                                     user_id=self.user_id)
 
 
