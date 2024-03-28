@@ -2,7 +2,7 @@ import unittest
 
 from events import SignInStartedEvent, OneTimePasswordSentEvent, SecurityChallengePassedEvent, \
     SecurityChallengePresentedEvent, SecurityChallengeAnsweredEvent, SecurityChallengeFailedEvent
-from events_generator import RandomEventsGenerator, SequentialEventsGenerator
+from events_generator import RandomEventsGenerator, SequentialEventsGenerator, MultipleUsersEventsGenerator
 from time_generator import TimeGenerator
 
 
@@ -103,3 +103,16 @@ class EventsGeneratorTests(unittest.TestCase):
         self.assertEqual(3, len(events))
         self.assertEqual(events[0].time, events[1].time - 2)
         self.assertEqual(events[1].time, events[2].time - 2)
+
+    def test_multiple_users_events_generator(self):
+        seq_events_generator = SequentialEventsGenerator([
+            SignInStartedEvent,
+            SecurityChallengePresentedEvent,
+            SecurityChallengeAnsweredEvent,
+            RandomEventsGenerator({SecurityChallengePassedEvent, SecurityChallengeFailedEvent})
+        ])
+        generator = MultipleUsersEventsGenerator(seq_events_generator, 3)
+        events = list(generator.generate())
+        unique_user_ids = {event.user_id for event in events}
+        self.assertEqual(12, len(events))
+        self.assertEqual(3, len(unique_user_ids))

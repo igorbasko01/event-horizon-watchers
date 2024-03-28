@@ -31,6 +31,9 @@ alphabet = 'abcdefghijklmnopqrstuvwxyz'
 alphanumeric = digits + alphabet
 
 
+def userid_generator():
+    return ''.join(random.choices(alphabet, k=10))
+
 def password_generator():
     return ''.join(random.choices(digits, k=6))
 
