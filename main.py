@@ -1,6 +1,4 @@
-from typing import Type, Set
-
-from events import SignInStartedEvent, OneTimePasswordSentEvent, SecurityChallengePassedEvent, Event, \
+from events import SignInStartedEvent, SecurityChallengePassedEvent, \
     SecurityChallengeFailedEvent, SecurityChallengePresentedEvent, SecurityChallengeAnsweredEvent
 from events_generator import RandomEventsGenerator, SequentialEventsGenerator
 from file_writer import EventsFileWriter

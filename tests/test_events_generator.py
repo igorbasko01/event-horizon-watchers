@@ -86,3 +86,20 @@ class EventsGeneratorTests(unittest.TestCase):
         self.assertEqual(events[1].time, events[2].time - 2)
         self.assertEqual(events[2].time, events[3].time - 2)
         self.assertEqual(events[3].time, events[4].time - 2)
+
+    def test_sequential_events_generator_generates_different_times(self):
+        generator = SequentialEventsGenerator(
+            [SignInStartedEvent, OneTimePasswordSentEvent, SecurityChallengePassedEvent], 'uid')
+        events = list(generator.generate())
+        self.assertEqual(3, len(events))
+        self.assertEqual(events[0].time, events[1].time - 1)
+        self.assertEqual(events[1].time, events[2].time - 1)
+
+    def test_sequential_events_generator_generates_different_times2(self):
+        time_generator = TimeGenerator(1, increment=2)
+        generator = SequentialEventsGenerator(
+            [SignInStartedEvent, OneTimePasswordSentEvent, SecurityChallengePassedEvent], 'uid', time_generator)
+        events = list(generator.generate())
+        self.assertEqual(3, len(events))
+        self.assertEqual(events[0].time, events[1].time - 2)
+        self.assertEqual(events[1].time, events[2].time - 2)

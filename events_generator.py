@@ -28,16 +28,17 @@ class RandomEventsGenerator(EventsGenerator):
 
 
 class SequentialEventsGenerator(EventsGenerator):
-    def __init__(self, event_types: List[Union[Type[Event], Type[EventsGenerator]]], user_id: UserId):
+    def __init__(self, event_types: List[Union[Type[Event], Type[EventsGenerator]]], user_id: UserId, time_generator=None):
         self.event_types = event_types
         self.user_id = user_id
+        self.time_generator = time_generator or TimeGenerator(int(datetime.now().timestamp() * 1000))
 
     def generate(self):
         for event_type in self.event_types:
             if isinstance(event_type, EventsGenerator):
                 yield from event_type.generate()
             elif issubclass(event_type, Event):
-                yield event_type(time=int(datetime.now().timestamp() * 1000),  # milliseconds
+                yield event_type(time=self.time_generator.next(),  # milliseconds
                                  user_id=self.user_id)
             else:
                 raise ValueError('Invalid event type')
