@@ -15,7 +15,7 @@ if __name__ == '__main__':
         SecurityChallengeAnsweredEvent,
         RandomEventsGenerator(security_challenge_response_events, time_generator=time_generator)
     ], time_generator=time_generator)
-    generator = MultipleUsersEventsGenerator(seq_events_generator, 3)
+    generator = MultipleUsersEventsGenerator(seq_events_generator, 300)
     with open('events.json', 'w') as file:
         EventsFileWriter.write(generator, file)
     print('Done !')

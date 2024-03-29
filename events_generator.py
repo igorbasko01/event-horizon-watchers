@@ -10,7 +10,7 @@ from time_generator import TimeGenerator
 
 class EventsGenerator(ABC):
     @abstractmethod
-    def generate(self, user_id: UserId  = None) -> Generator[Event, None, None]:
+    def generate(self, user_id: UserId) -> Generator[Event, None, None]:
         pass
 
 
@@ -37,7 +37,7 @@ class SequentialEventsGenerator(EventsGenerator):
     def generate(self, user_id: UserId = None) -> Generator[Event, None, None]:
         for event_type in self.event_types:
             if isinstance(event_type, EventsGenerator):
-                yield from event_type.generate(user_id=user_id or self.user_id)
+                yield from event_type.generate(user_id or self.user_id)
             elif issubclass(event_type, Event):
                 yield event_type(time=self.time_generator.next(),  # milliseconds
                                  user_id=user_id or self.user_id)
@@ -48,8 +48,16 @@ class SequentialEventsGenerator(EventsGenerator):
 class MultipleUsersEventsGenerator(EventsGenerator):
     def __init__(self, events_generator: EventsGenerator, users: int):
         self.events_generator = events_generator
-        self.users = {UserId(events.userid_generator()) for _ in range(users)}
+        self.users = [UserId(events.userid_generator()) for _ in range(users)]
 
     def generate(self, user_id: UserId = None) -> Generator[Event, None, None]:
-        for user in self.users:
-            yield from self.events_generator.generate(user)
+        generators = [self.events_generator.generate(user) for user in self.users]
+        finished_generators = set()
+        while finished_generators != set(generators):
+            generator = random.choice(generators)
+            event = next(generator, None)
+            if event:
+                yield event
+            else:
+                finished_generators.add(generator)
+
